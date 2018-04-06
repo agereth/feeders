@@ -16,13 +16,14 @@ Vision = 5
 Pressure = 6
 
 
-def create_csv(filename: str, side: str, pos_data: [str], feeder_data: [str]):
+def create_csv(filename: str, side: str, pos_data: [str], feeder_data: [str], sign: int):
     """
     creates csv for machine for top or bottom side of board
     :param filename: filename for csv
     :param side: top or bottom
     :param pos_data: list of positoins
     :param feeder_data: list of feeders
+    :param sign: 1 for top and -1 for bottom
     :return:
     """
     f = open(filename.split('.')[0] + "_%s.csv" % side, "w", newline="")
@@ -40,7 +41,8 @@ def create_csv(filename: str, side: str, pos_data: [str], feeder_data: [str]):
                 current_feeder = feeder
         if not current_feeder:
             current_feeder = [current_pos, '1', 'L1', '0', '100', 'None']
-        row = [pos[Ref], current_feeder[Nozzle], current_feeder[Stack], pos[PosX], pos[PosY], pos[Rot],
+        newx = str(sign*float(pos[PosX]))
+        row = [pos[Ref], current_feeder[Nozzle], current_feeder[Stack], newx, pos[PosY], pos[Rot],
                current_feeder[Height], current_feeder[Speed], current_feeder[Vision], 'True',
                current_pos]
         writer.writerow(row)
@@ -67,8 +69,8 @@ def main(filename: str):
     feeder_data = [row for row in reader][1:]
     feeder_data = [row for row in feeder_data if row[0]]
     f.close()
-    create_csv(filename, "top", top_data, feeder_data)
-    create_csv(filename, "bottom", bottom_data, feeder_data)
+    create_csv(filename, "top", top_data, feeder_data, 1)
+    create_csv(filename, "bottom", bottom_data, feeder_data, -1)
     return
 
 
